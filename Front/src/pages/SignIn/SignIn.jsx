@@ -1,18 +1,15 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid2 from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import FormControl from "@mui/material/FormControl";
 
-const SignUp = () => {
+const SignIn = () => {
   return (
     <Box
       sx={{
@@ -20,7 +17,7 @@ const SignUp = () => {
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "center", 
         justifyContent: "center",
         backgroundColor: "#f0f2f5",
       }}
@@ -47,7 +44,7 @@ const SignUp = () => {
         >
           <LockOutlinedIcon fontSize="large" color="primary" />
           <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
-            Sign Up
+            Sign In
           </Typography>
         </Box>
         <FormControl noValidate sx={{ width: "100%" }}>
@@ -76,19 +73,21 @@ const SignUp = () => {
               />
             </Grid2>
           </Grid2>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2, py: 1.5 }}
-          >
-            Sign Up
-          </Button>
+          <Link href="home" variant="body2" underline="none">
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"z
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
+            >
+              Sign In
+            </Button>
+          </Link>
           <Grid2 container justifyContent="flex-end">
             <Grid2>
               <Link href="cadastro" variant="body2">
-                Already have an account? Sign in
+                Don't have an account? Sign up
               </Link>
             </Grid2>
           </Grid2>
@@ -99,4 +98,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
