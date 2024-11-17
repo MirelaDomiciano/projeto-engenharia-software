@@ -7,18 +7,22 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { blue } from '@mui/material/colors';
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
-
+import NewProduct from "../NewProduct/NewProduct";
 const drawerWidth = 240;
 
 const Home = () => {
-    const [isDrawOpen, setIsDrawOpen] = useState(false);
+    const [showNewProduct, setShowNewProduct] = useState(false);
+
+    const handleNewProductClick = () => {
+        setShowNewProduct(true);
+    };
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
             <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}>
                 <Toolbar>
                     <Typography variant="h6" noWrap component="div">
-                        Permanent drawer
+                        Home
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -39,19 +43,22 @@ const Home = () => {
             >
                 <Toolbar />
         <Divider />
-            <List>
-            {['Novo Produto'].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <AddCircleIcon sx={{ color: blue[600]}}/> 
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                </ListItemButton>
-                </ListItem>
-            ))}
-            </List>
+                <List>
+                    {['Novo Produto'].map((text, index) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton onClick={handleNewProductClick}>
+                                <ListItemIcon>
+                                    <AddCircleIcon sx={{ color: blue[600]}}/> 
+                                </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
             </Drawer>
+            <Box sx={{ p: 3, transition: 'margin-left 0.2s' }}>
+                {showNewProduct ? <NewProduct /> : <Typography variant="h6">Selecione um produto.</Typography>}
+            </Box>
         </Box>
     );
 };
