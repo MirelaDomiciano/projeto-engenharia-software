@@ -1,12 +1,26 @@
 const mysql = require("../config/mysql");
 
 const User = {
-  getUser: async (email, password) => {
-    const rows = await mysql.query(
-      "SELECT * FROM users WHERE email = ? AND password = ?",
-      [email, password]
-    );
-    return rows[0];
+  getUserByEmail: async (email) => {
+    try {
+      const rows = await mysql.query("SELECT * FROM users WHERE email = ?", [
+        email,
+      ]);
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  createUser: async ({ name, email, password, address, type }) => {
+    try {
+      await mysql.query(
+        "INSERT INTO users (name, email, password, address, type) VALUES (?, ?, ?, ?, ?)",
+        [name, email, password, address, type]
+      );
+    } catch (error) {
+      throw error;
+    }
   },
 };
 

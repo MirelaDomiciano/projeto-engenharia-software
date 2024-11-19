@@ -1,16 +1,25 @@
 const express = require("express");
 const cors = require("cors");
-let app = express();
-app.use(cors());
-app.use(express.json());
-
-const userRoutes = require("./routes/usersRoutes");
-
-const port = process.env.PORT;
+const bodyParser = require("body-parser");
 require("dotenv").config();
 
-app.use(userRoutes);
+const userRoutes = require("./routes/usersRoutes");
+const productRoutes = require("./routes/productsRoutes");
+const stockRoutes = require("./routes/stockRoutes");
+const trackingRoutes = require("./routes/trackingRoutes");
 
-let server = app.listen(port, function () {
-  console.log("Asthon REST API listening on port %s", port);
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
+app.use(userRoutes);
+app.use(productRoutes);
+app.use(stockRoutes);
+app.use(trackingRoutes);
+
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
 });
