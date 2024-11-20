@@ -1,63 +1,96 @@
-import React, { useState, useRef } from 'react';
-import { Box, Button, TextField, Typography, Snackbar, Input } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
-import { grey } from '@mui/material/colors';
+import { useState } from 'react';
+import axios from 'axios';
+import { Button, Typography, Input, Box, Snackbar, Alert, TextField } from '@mui/material';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+let baseURL = import.meta.env.VITE_API_URL;
+const userCookie = window.localStorage.getItem('user');
+const cityGroup = window.localStorage.getItem('cityGroup');
+const clientID = window.localStorage.getItem('clientID');
+const serviceToken = window.localStorage.getItem('serviceToken');
 
-const NewProduct = () => {
+const NewProduct = (props) => {
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
-    const [image, setImage] = useState(null);
-    const [open, setOpen] = useState(false);
-    const imageInputRef = useRef(null); // Referência para o input de arquivo
+    const [quantity, setQuantity] = useState('');
+    const [location, setLocation] = useState('');
+    const [file, setFile] = useState({ name: 'Exemplo.pdf' });
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessages, setSnackbarMessages] = useState([]);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [currentMessage, setCurrentMessage] = useState('');
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+        if (snackbarMessages.length > 0) {
+            const nextMessage = snackbarMessages.shift();
+            setCurrentMessage(nextMessage);
+            setSnackbarOpen(true);
+        }
+    };
 
-        const productData = {
-            name: productName,
-            description: description,
-            price: parseFloat(price),
-            image: image,
-        };
+    const enqueueSnackbar = (message, severity = 'success') => {
+        setSnackbarMessages((prevMessages) => [...prevMessages, message]);
+        setSnackbarSeverity(severity);
+        if (!snackbarOpen) {
+            const nextMessage = snackbarMessages.shift() || message;
+            setCurrentMessage(nextMessage);
+            setSnackbarOpen(true);
+        }
+    };
 
-        console.log("Dados do produto:", productData);
-        setOpen(true);
-
-        // Resetar campos do formulário
+    const resetForm = () => {
         setProductName('');
         setDescription('');
         setPrice('');
-        setImage(null);
-        if (imageInputRef.current) {
-            imageInputRef.current.value = ''; // Resetar o input de arquivo
-        }
+        setQuantity('');
+        setLocation('');
+        setFile({ name: 'Exemplo.pdf' });
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setImage(file);
-        }
-    };
+    function send(event) {
+        event.preventDefault();
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("fileName", file.name);
 
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpen(false);
-    };
+        axios
+            .post(baseURL + "uploadImage", formData, {})
+            .then(() => {
+                axios
+                    .post(baseURL + "products", {
+                        name: productName,
+                        price: parseFloat(price),
+                        image: file.name,
+                        description: description,
+                        quantity: parseInt(quantity),
+                        location: location,
+                    })
+                    .then(() => {
+                        resetForm();
+                        enqueueSnackbar(
+                            "Produto cadastrado com sucesso!",
+                            "success"
+                        );
+                    })
+                    .catch(() => {
+                        enqueueSnackbar(
+                            "Imagem enviada, mas falha no cadastro do produto.",
+                            "error"
+                        );
+                    });
+            })
+            .catch(() => {
+                enqueueSnackbar("Falha no envio da imagem.", "error");
+            });
+    }
 
     return (
         <Box>
             <Typography variant="h4" gutterBottom>
                 Novo Produto
             </Typography>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={send}>
                 <TextField
                     label="Nome do Produto"
                     variant="outlined"
@@ -91,35 +124,86 @@ const NewProduct = () => {
                     }}
                 />
                 <TextField
-                    label="Selecionar Imagem"
-                    type="file"
+                    label="Quantidade"
+                    variant="outlined"
                     fullWidth
                     margin="normal"
-                    InputLabelProps={{
-                        shrink: true,
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    required
+                    type="number"
+                    inputProps={{
+                        min: "0",
+                        step: "1"
                     }}
-                    InputProps={{
-                        inputProps: {
-                            ref: imageInputRef, 
-                            accept: "image/*",
-                            sx: { color: grey[700]},
-                            
-                        },
-                    }}
-                    onChange={handleImageChange}
                 />
-                {image && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                        Imagem selecionada: {image.name}
-                    </Typography>
-                )}
-                <Button variant="contained" color="primary" type="submit" sx={{ mt: 2 }}>
+                <TextField
+                    label="Localização"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                    placeholder="Digite a localização do produto"
+                />
+                <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        component="label"
+                        style={{
+                            backgroundColor: '#2196F3',
+                            color: '#FFFFFF',
+                            textTransform: 'none',
+                            padding: '10px 20px',
+                            fontSize: '16px'
+                        }}
+                    >
+                        Selecionar Imagem
+                        <Input 
+                            type="file" 
+                            style={{ display: 'none' }} 
+                            onChange={(e) => setFile(e.target.files[0])}
+                            inputProps={{
+                                accept: "image/*"
+                            }}
+                        />
+                    </Button>
+                    {file && (
+                        <Typography variant="body2" style={{ fontStyle: 'italic' }}>
+                            Arquivo selecionado: {file.name}
+                        </Typography>
+                    )}
+                </Box>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    sx={{ mt: 2 }}
+                    style={{
+                        backgroundColor: '#2196F3',
+                        color: '#FFFFFF',
+                        textTransform: 'none',
+                        padding: '10px 20px',
+                        fontSize: '16px'
+                    }}
+                >
                     Adicionar Produto
                 </Button>
             </form>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="success">
-                    Produto cadastrado com sucesso!
+            <Snackbar 
+                open={snackbarOpen} 
+                autoHideDuration={6000} 
+                onClose={handleSnackbarClose} 
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbarSeverity} 
+                    sx={{ width: '100%' }}
+                >
+                    {currentMessage}
                 </Alert>
             </Snackbar>
         </Box>
