@@ -133,7 +133,6 @@ const ProductList = () => {
                                     <IconButton 
                                         aria-label="editar"
                                         onClick={() => {
-                                            // Implementar função de edição
                                             console.log('Editar produto:', product.id);
                                         }}
                                     >

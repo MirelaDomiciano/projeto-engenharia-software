@@ -1,66 +1,67 @@
-import React from "react";
-import Drawer from '@mui/material/Drawer';
-import { Box, Typography, IconButton, AppBar, Toolbar, Divider } from "@mui/material";
-import { List, ListItemText, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import CssBaseline from '@mui/material/CssBaseline';
-import { blue } from '@mui/material/colors';
-import { useState } from "react";
-import MenuIcon from '@mui/icons-material/Menu';
-import NewProduct from "../NewProduct/NewProduct";
-const drawerWidth = 240;
+import React from 'react';
+import { useNavigate, Outlet } from 'react-router-dom';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+} from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Home = () => {
-    const [showNewProduct, setShowNewProduct] = useState(false);
+  const navigate = useNavigate();
 
-    const handleNewProductClick = () => {
-        setShowNewProduct(true);
-    };
-    return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}>
-                <Toolbar>
-                    <Typography variant="h6" noWrap component="div">
-                        Home
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <IconButton size='large' edge='start' color='inherit' aria-label="logo" onClick={() => setIsDrawOpen(true)}>
-                <MenuIcon />
-            </IconButton>
-            <Drawer 
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                    },
-                }}
-                anchor='left'
-                variant="permanent"
-            >
-                <Toolbar />
-        <Divider />
-                <List>
-                    {['Novo Produto'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton onClick={handleNewProductClick}>
-                                <ListItemIcon>
-                                    <AddCircleIcon sx={{ color: blue[600]}}/> 
-                                </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-            <Box sx={{ p: 3, transition: 'margin-left 0.2s' }}>
-                {showNewProduct ? <NewProduct /> : <Typography variant="h6">Selecione um produto.</Typography>}
-            </Box>
-        </Box>
-    );
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Limpa os dados do usuário
+    navigate('/'); // Volta para a tela de login
+  };
+
+  return (
+    <Box sx={{ flexGrow: 1, height: '100vh', bgcolor: '#f0f2f5' }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            My Store
+          </Typography>
+          
+          <Button
+            color="inherit"
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={() => navigate('new_product')}
+            sx={{ mx: 1 }}
+          >
+            New Product
+          </Button>
+          
+          <Button
+            color="inherit"
+            startIcon={<FormatListBulletedIcon />}
+            onClick={() => navigate('/home/list-products')}
+            sx={{ mx: 1 }}
+          >
+            List Products
+          </Button>
+          
+          <Button
+            color="inherit"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+            sx={{ mx: 1 }}
+          >
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Outlet />
+      </Container>
+    </Box>
+  );
 };
 
 export default Home;

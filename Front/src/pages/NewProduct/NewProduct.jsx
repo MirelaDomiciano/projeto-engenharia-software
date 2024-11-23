@@ -160,7 +160,7 @@ const NewProduct = (props) => {
                             fontSize: '16px'
                         }}
                     >
-                        Selecionar Imagem
+                        Selecionar
                         <Input 
                             type="file" 
                             style={{ display: 'none' }} 
