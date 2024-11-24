@@ -6,11 +6,11 @@ import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
-import Grid2 from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import { Select, MenuItem, InputLabel, FormHelperText } from "@mui/material";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,12 +18,18 @@ const SignUp = () => {
     email: "",
     password: "",
     address: "",
-    type: 0, 
+    type: "", 
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
+  const userTypes = [
+    { value: 0, label: "Buyer", description: "Sign up to buy products" },
+    { value: 1, label: "Seller", description: "Sign up to sell products" },
+    { value: 2, label: "Deliverer", description: "Sign up to make deliveries" }
+  ];
 
   const handleChange = (e) => {
     setFormData({
@@ -37,18 +43,22 @@ const SignUp = () => {
     setError("");
     setSuccess("");
 
+    if (formData.type === "") {
+      setError("Please select a user type");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:8081/signUp", formData);
-
       if (response.status === 201) { 
-        setSuccess("Usuário criado  com sucesso");
+        setSuccess("User created successfully");
         setTimeout(() => {
           navigate("/");
         }, 2000);
       }
     } catch (err) {
       setError(
-        err.response?.data?.error || "Ocorreu um erro ao cadastrar."
+        err.response?.data?.error || "An error occurred during registration."
       );
     }
   };
@@ -73,7 +83,8 @@ const SignUp = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          width: "20%",
+          width: { xs: "90%", sm: "60%", md: "40%", lg: "30%" },
+          maxWidth: "500px",
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -102,73 +113,95 @@ const SignUp = () => {
           </Alert>
         )}
 
-        <FormControl component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
-          <Grid2 container rowSpacing={2} width={'100%'}>
-            <Grid2 size={12} >
-              <TextField
-                name="name"
-                variant="outlined"
-                required
-                fullWidth
-                label="Name"
-                autoFocus
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </Grid2>
-            <Grid2 size={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </Grid2>
-            <Grid2 size={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </Grid2>
-            <Grid2 size={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="address"
-                label="Address"
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </Grid2>
-          </Grid2>
+        <Box 
+          component="form" 
+          onSubmit={handleSubmit} 
+          sx={{ 
+            width: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2
+          }}
+        >
+          <TextField
+            name="name"
+            variant="outlined"
+            required
+            fullWidth
+            label="Full Name"
+            autoFocus
+            value={formData.name}
+            onChange={handleChange}
+          />
+
+          <TextField
+            variant="outlined"
+            required
+            fullWidth
+            label="Email Address"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+
+          <TextField
+            variant="outlined"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+
+          <TextField
+            variant="outlined"
+            required
+            fullWidth
+            name="address"
+            label="Address"
+            value={formData.address}
+            onChange={handleChange}
+          />
+
+          <FormControl fullWidth required>
+            <InputLabel>User Type</InputLabel>
+            <Select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              label="User Type"
+            >
+              {userTypes.map((type) => (
+                <MenuItem key={type.value} value={type.value}>
+                  {type.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              {formData.type !== "" && 
+                userTypes.find(t => t.value === formData.type)?.description}
+            </FormHelperText>
+          </FormControl>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 3, mb: 2, py: 1.5 }}
+            sx={{ mt: 1, py: 1.5 }}
           >
             Sign Up
           </Button>
-          <Grid2 container justifyContent="flex-end">
-            <Grid2 item>
-              <Link href="/" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid2>
-          </Grid2>
-        </FormControl>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+            <Link href="/" variant="body2">
+              Already have an account? Sign in
+            </Link>
+          </Box>
+        </Box>
       </Paper>
     </Box>
   );

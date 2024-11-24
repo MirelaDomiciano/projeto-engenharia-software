@@ -3,18 +3,16 @@ import {
   Box, 
   AppBar, 
   Toolbar, 
-  Typography, 
-  Container 
+  Typography 
 } from '@mui/material';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import NavTabs from '../../Components/NavTabs/NavTabs';
 import NewProduct from '../NewProduct/NewProduct';
 import ProductList from '../ProductList/ProductList';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const Home = () => {
   const location = useLocation();
   const {email, type} = location.state || {};
-  console.log(email, type);
 
   const [currentTab, setCurrentTab] = React.useState(0);
   const navigate = useNavigate();
@@ -28,6 +26,9 @@ const Home = () => {
     navigate('/');
   };
 
+  // Verifica se está na rota de detalhes do produto
+  const isProductDetailRoute = location.pathname.includes('/home/product-detail/');
+
   return (
     <Box sx={{ 
       display: 'flex', 
@@ -36,7 +37,6 @@ const Home = () => {
       width: '100vw', 
       overflow: 'hidden' 
     }}>
-      {/* AppBar Fixa na Parte Superior */}
       <AppBar position="fixed" color="primary">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ marginRight: 2 }}>
@@ -51,21 +51,29 @@ const Home = () => {
       </AppBar>
       <Toolbar />
 
-      {/* Conteúdo Principal */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           width: '100%',
           maxWidth: '100%',
-          height: 'calc(100vh - 200x)', // Subtrai altura do AppBar
+          height: 'calc(100vh - 64px)', 
           overflow: 'auto',
           bgcolor: '#f0f2f5',
-          px: { xs: 2, sm: 2, md: 3 }, // Padding responsivo
+          px: { xs: 2, sm: 2, md: 3 },
+          position: 'relative'
         }}
       >
-        {currentTab === 0 && <NewProduct email={email} />}
-        {currentTab === 1 && <ProductList email={email} type={type} />}
+        {/* Outlet para renderizar rotas aninhadas */}
+        <Outlet />
+
+        {/* Conteúdo original condicional */}
+        {!isProductDetailRoute && (
+          <>
+            {currentTab === 0 && <NewProduct email={email} />}
+            {currentTab === 1 && <ProductList email={email} type={type} />}
+          </>
+        )}
       </Box>
     </Box>
   );
