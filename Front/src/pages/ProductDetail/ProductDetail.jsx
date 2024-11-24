@@ -12,6 +12,7 @@ import BuyProductComponent from '../../Components/ProductDetail/BuyProductCompon
 import UpdateStockComponent from '../../Components/ProductDetail/UpdateStockComponent';
 import UpdateStatusComponent from '../../Components/ProductDetail/UpdateStatusComponent';
 import ValidateProductComponent from '../../Components/ProductDetail/ValidateProductComponent';
+import DeleteProductComponent from '../../Components/ProductDetail/DeleteProductComponent';
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -53,9 +54,14 @@ const ProductDetail = () => {
       case 1: 
         return <UpdateStockComponent product={product} />;
       case 2: 
-        return <UpdateStatusComponent product={product} />;
+        return <UpdateStatusComponent product={product} email={email}/>;
       case 3: 
-        return <ValidateProductComponent product={product} />;
+        return(
+        <>
+            <ValidateProductComponent product={product} />
+            <DeleteProductComponent product={product} />
+        </> 
+        );   
     }
   };
 

@@ -31,7 +31,7 @@ const Stock = {
 
   deleteProductStock: async (productCode) => {
     try {
-      const [result] = await mysql.query("DELETE FROM stock WHERE code = ?", [
+      const [result] = await mysql.query("DELETE FROM stock WHERE productCode = ?", [
         productCode,
       ]);
 

@@ -146,44 +146,7 @@ const ProductList = (props) => {
           </Grid>
         ))}
 
-        {/* Preenche com cards vazios para manter 4 colunas */}
-        {[...Array(4 - (products.length % 4 || 4))].map((_, index) => (
-          <Grid 
-            item 
-            key={`empty-${index}`} 
-            xs={12} 
-            sm={6} 
-            md={3} 
-            sx={{ 
-              display: 'flex',
-              width: '100%' 
-            }}
-          >
-            <Card 
-              sx={{
-                width: '100%',
-                borderRadius: 4, 
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                opacity: 0.5,
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '350px',
-              }}
-            >
-              <CardContent sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100%' 
-              }}>
-                <Typography variant="body1" color="text.secondary">
-                  Sem produto
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+        
       </Grid>
     </Box>
   );
