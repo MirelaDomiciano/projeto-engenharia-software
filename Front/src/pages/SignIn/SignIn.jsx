@@ -38,11 +38,11 @@ const SignIn = () => {
           email: formData.email,
           password: formData.password,
         },
-      });
-
+      })
+      
       if (response.status === 200) {
         localStorage.setItem('user', JSON.stringify(response.data));
-        navigate("/home");
+        navigate("/home", {state: {email: formData.email, type: response.data.type}});
       }
     } catch (err) {
       setError(

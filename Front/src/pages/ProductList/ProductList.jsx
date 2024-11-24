@@ -1,167 +1,115 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
     Box,
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Grid,
-    CircularProgress,
-    Alert,
-    IconButton,
-    CardActions,
-    Button
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 
-let baseURL = import.meta.env.VITE_API_URL;
+const ProductList = (props) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado de carregamento
+  const [error, setError] = useState(null); // Estado de erro
 
-const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // Função para buscar os produtos
+  useEffect(() => {
     const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get(`${baseURL}products`);
-            setProducts(response.data);
-            setError(null);
-        } catch (err) {
-            setError('Erro ao carregar os produtos: ' + err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Carregar produtos quando o componente montar
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    // Função para formatar o preço
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(price);
-    };
-
-    // Função para deletar produto
-    const handleDelete = async (id) => {
-        if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-            try {
-                await axios.delete(`${baseURL}products/${id}`);
-                setProducts(products.filter(product => product.id !== id));
-            } catch (err) {
-                setError('Erro ao deletar o produto: ' + err.message);
-            }
-        }
-    };
-
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
+      try {
+        const response = await axios.get(
+          'http://localhost:8081/products',
+          {
+            params: {
+              type: props.type,
+              emailUser: props.email,
+            },
+          }
         );
-    }
+        setProducts(response.data);
+        //console.log(response.data);
+      } catch (err) {
+        setError('Erro ao buscar os produtos.');
+        //console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (error) {
-        return (
-            <Box m={2}>
-                <Alert severity="error">{error}</Alert>
-            </Box>
-        );
-    }
+    fetchProducts();
+  }, []);
 
+  if (loading) {
     return (
-        <Box sx={{ flexGrow: 1, p: 3 }}>
-            <Typography variant="h4" gutterBottom component="div">
-                Produtos Disponíveis
-            </Typography>
-            
-            {products.length === 0 ? (
-                <Typography variant="h6" color="textSecondary">
-                    Nenhum produto encontrado.
-                </Typography>
-            ) : (
-                <Grid container spacing={3}>
-                    {products.map((product) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                            <Card 
-                                sx={{ 
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    '&:hover': {
-                                        boxShadow: 6
-                                    }
-                                }}
-                            >
-                                <CardMedia
-                                    component="img"
-                                    height="200"
-                                    image={`${baseURL}images/${product.image}`}
-                                    alt={product.name}
-                                    sx={{ objectFit: 'cover' }}
-                                    onError={(e) => {
-                                        e.target.src = 'caminho/para/imagem/padrao.jpg'; // Defina uma imagem padrão
-                                    }}
-                                />
-                                <CardContent sx={{ flexGrow: 1 }}>
-                                    <Typography gutterBottom variant="h6" component="div">
-                                        {product.name}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {product.description}
-                                    </Typography>
-                                    <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-                                        {formatPrice(product.price)}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Quantidade: {product.quantity}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Localização: {product.location}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <IconButton 
-                                        aria-label="editar"
-                                        onClick={() => {
-                                            console.log('Editar produto:', product.id);
-                                        }}
-                                    >
-                                        <EditIcon />
-                                    </IconButton>
-                                    <IconButton 
-                                        aria-label="deletar"
-                                        onClick={() => handleDelete(product.id)}
-                                        sx={{ color: 'error.main' }}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            )}
-
-            {/* Botão para atualizar a lista */}
-            <Button
-                variant="contained"
-                onClick={fetchProducts}
-                sx={{ mt: 3 }}
-            >
-                Atualizar Lista
-            </Button>
-        </Box>
+      <Grid container justifyContent="center" style={{ marginTop: '2rem' }}>
+        <CircularProgress />
+      </Grid>
     );
-};
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" style={{ marginTop: '2rem' }}>
+        {error}
+      </Alert>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <Typography variant="h6" align="center" color='#616161' style={{ marginTop: '2rem' }}>
+        Nenhum produto encontrado.
+      </Typography>
+    );
+  }
+
+  return (
+    <Box sx={{ 
+      width: '100%', 
+      maxWidth: '100%', 
+      overflow: 'hidden' 
+    }}>    
+      <Grid container spacing={4} sx={{ 
+        width: '100%', 
+        maxWidth: '100%', 
+        margin: 0,
+        paddingRight: '80px',
+        paddingTop: '20px',
+      }}>
+        {products.map((product) => (
+          <Grid item key={product.code} xs={12} sm={6} md={3} sx={{ display: 'flex' }}>
+            <Card sx={{borderRadius: 4, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",}}>
+              <CardMedia
+                component="img"
+                height="200"
+                image={ "/public" + '/' + product.emailUser + '/' + product.imageName}
+                onError={(e) => {
+                  console.error('Erro ao carregar imagem', {
+                    product,
+                    imagePath: "/public" + '/' + product.emailUser + '/' + product.imageName
+                  });
+                }}
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {product.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {product.description}
+                </Typography>
+                <Typography variant="h6" color="primary" style={{ marginTop: '0.5rem' }}>
+                  R${parseFloat(product.price).toFixed(2)}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
 
 export default ProductList;
+

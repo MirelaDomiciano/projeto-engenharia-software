@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Button, Typography, Input, Box, Snackbar, Alert, TextField } from '@mui/material';
+import { Button, Typography, Input, Box, Snackbar, Alert, TextField, Grid } from '@mui/material';
 
 let baseURL = import.meta.env.VITE_API_URL;
-const userCookie = window.localStorage.getItem('user');
-const cityGroup = window.localStorage.getItem('cityGroup');
-const clientID = window.localStorage.getItem('clientID');
-const serviceToken = window.localStorage.getItem('serviceToken');
 
 const NewProduct = (props) => {
     const [productName, setProductName] = useState('');
@@ -14,7 +10,7 @@ const NewProduct = (props) => {
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [location, setLocation] = useState('');
-    const [file, setFile] = useState({ name: 'Example.pdf' });
+    const [file, setFile] = useState({ name: 'Exemplo.pdf' });
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessages, setSnackbarMessages] = useState([]);
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -45,48 +41,72 @@ const NewProduct = (props) => {
         setPrice('');
         setQuantity('');
         setLocation('');
-        setFile({ name: 'Example.pdf' });
+        setFile({ name: 'Exemplo.pdf' });
     };
 
-    const send = (event) => {
+    function send(event) {
+        console.log(file);
         event.preventDefault();
         let formData = new FormData();
         formData.append("file", file);
         formData.append("fileName", file.name);
+        formData.append("emailUser", props.email);
 
         axios
-            .post(`${baseURL}uploadImage`, formData)
+            .post(baseURL + "uploadImage", formData, {headers: {'Content-Type': 'multipart/form-data'}})
             .then(() => {
                 axios
-                    .post(`${baseURL}products`, {
+                    .post(baseURL + "products", {
                         name: productName,
                         price: parseFloat(price),
                         image: file.name,
                         description: description,
                         quantity: parseInt(quantity),
                         location: location,
+                        emailUser: props.email,
                     })
                     .then(() => {
                         resetForm();
-                        enqueueSnackbar("Product successfully registered!", "success");
+                        enqueueSnackbar(
+                            "Produto cadastrado com sucesso!",
+                            "success"
+                        );
                     })
                     .catch(() => {
-                        enqueueSnackbar("Image uploaded, but product registration failed.", "error");
+                        enqueueSnackbar(
+                            "Imagem enviada, mas falha no cadastro do produto.",
+                            "error"
+                        );
                     });
             })
             .catch(() => {
-                enqueueSnackbar("Image upload failed.", "error");
+                enqueueSnackbar("Falha no envio da imagem.", "error");
             });
-    };
+    }
 
     return (
-        <Box>
+        <Box  sx={{ 
+            width: '100%', 
+            maxWidth: '100%', 
+            overflow: 'hidden' }}
+        >
+            <Grid   
+                spacing={4} 
+                sx={{ 
+                width: '100%', 
+                maxWidth: '100%', 
+                margin: 0,
+                padding: '40px',
+                paddingRight: '80px',
+                justifyContent: 'center',
+                }}
+            >
             <Typography variant="h4" gutterBottom color='#616161'>
-                New Product
+                Novo Produto
             </Typography>
             <form onSubmit={send}>
                 <TextField
-                    label="Product Name"
+                    label="Nome do Produto"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -95,7 +115,7 @@ const NewProduct = (props) => {
                     required
                 />
                 <TextField
-                    label="Description"
+                    label="Descrição"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -104,7 +124,7 @@ const NewProduct = (props) => {
                     required
                 />
                 <TextField
-                    label="Price"
+                    label="Preço"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -118,7 +138,7 @@ const NewProduct = (props) => {
                     }}
                 />
                 <TextField
-                    label="Quantity"
+                    label="Quantidade"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -132,14 +152,14 @@ const NewProduct = (props) => {
                     }}
                 />
                 <TextField
-                    label="Location"
+                    label="Localização"
                     variant="outlined"
                     fullWidth
                     margin="normal"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     required
-                    placeholder="Enter product location"
+                    placeholder="Digite a localização do produto"
                 />
                 <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
                     <Button
@@ -154,19 +174,16 @@ const NewProduct = (props) => {
                             fontSize: '16px'
                         }}
                     >
-                        Select
+                        Selecionar
                         <Input 
                             type="file" 
                             style={{ display: 'none' }} 
                             onChange={(e) => setFile(e.target.files[0])}
-                            inputProps={{
-                                accept: "image/*"
-                            }}
                         />
                     </Button>
                     {file && (
                         <Typography variant="body2" color='#616161' style={{ fontStyle: 'italic' }}>
-                            Selected File: {file.name}
+                            Arquivo selecionado: {file.name}
                         </Typography>
                     )}
                 </Box>
@@ -183,7 +200,7 @@ const NewProduct = (props) => {
                         fontSize: '16px'
                     }}
                 >
-                    Add Product
+                    Adicionar Produto
                 </Button>
             </form>
             <Snackbar 
@@ -200,6 +217,7 @@ const NewProduct = (props) => {
                     {currentMessage}
                 </Alert>
             </Snackbar>
+            </Grid>
         </Box>
     );
 };
