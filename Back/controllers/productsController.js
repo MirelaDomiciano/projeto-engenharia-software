@@ -86,6 +86,7 @@ const uploadImage = async (req, res) => {
     const tempPath = req.file.path;
     const fileName = req.file.originalname.replace(/\s+/g, "_");
 
+    console.log(fileName, emailUser);
     const targetDir = path.join(process.env.UPLOAD, emailUser);
 
     if (!fs.existsSync(targetDir)) {
