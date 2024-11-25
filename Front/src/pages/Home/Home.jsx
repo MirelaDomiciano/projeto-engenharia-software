@@ -11,6 +11,7 @@ import NewProduct from '../NewProduct/NewProduct';
 import ProductList from '../ProductList/ProductList';
 import HomeComponent from '../../Components/Home/HomeComponent';
 import PurchasedProducts from '../PurchasedProducts/PurchasedProducts';
+import TrackingList from '../TrackingList/TrackingList';
 
 const Home = () => {
   const location = useLocation();
@@ -34,27 +35,27 @@ const Home = () => {
 
     // Seller (type 1)
     if (type === 1) {
-      if (currentTab === 0) return <HomeComponent />;
+      if (currentTab === 0) return <HomeComponent userType={type}/>;
       if (currentTab === 1) return <NewProduct email={email} />;
       if (currentTab === 2) return <ProductList email={email} type={type} />;
     }
 
     // Buyer (type 0)
     if (type === 0) {
-      if (currentTab === 0) return <HomeComponent />;
+      if (currentTab === 0) return <HomeComponent userType={type}/>;
       if (currentTab === 1) return <ProductList email={email} type={type} />;
       if (currentTab === 2) return <PurchasedProducts email={email} />;
     }
 
     // Deliverer (type 2)
     if (type === 2) {
-      if (currentTab === 0) return <HomeComponent />;
-      if (currentTab === 1) return <ProductList email={email} type={type} />;
+      if (currentTab === 0) return <HomeComponent userType={type}/>;
+      if (currentTab === 1) return <TrackingList />;
     }
 
     // Admin (type 3)
     if (type === 3) {
-      if (currentTab === 0) return <HomeComponent />;
+      if (currentTab === 0) return <HomeComponent userType={type}/>;
       if (currentTab === 1) return <ProductList email={email} type={type} />;
     }
 
@@ -62,7 +63,7 @@ const Home = () => {
   };
 
   // Se estiver na rota de detalhes do produto, renderiza o Outlet
-  if (location.pathname.includes('/home/product-detail/')) {
+  if (location.pathname.includes('/home/product-detail/') || location.pathname.includes('/home/tracking-detail/')|| location.pathname.includes('/home/tracking-view/')){
     return (
       <Box sx={{ 
         display: 'flex', 
@@ -74,7 +75,7 @@ const Home = () => {
         <AppBar position="fixed" color="primary">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ marginRight: 2 }}>
-              My Store
+             ViaTech
             </Typography>
             <NavTabs
               currentTab={currentTab}
@@ -115,8 +116,8 @@ const Home = () => {
     }}>
       <AppBar position="fixed" color="primary">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ marginRight: 2 }}>
-            My Store
+          <Typography variant="h5" component="div" sx={{ marginRight: 2 }}>
+             ViaTech
           </Typography>
           <NavTabs
             currentTab={currentTab}

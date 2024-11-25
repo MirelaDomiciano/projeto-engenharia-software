@@ -53,8 +53,6 @@ const ProductDetail = () => {
         return <BuyProductComponent product={product} email={email} />;
       case 1: 
         return <UpdateStockComponent product={product} />;
-      case 2: 
-        return <UpdateStatusComponent product={product} email={email}/>;
       case 3: 
         return(
         <>

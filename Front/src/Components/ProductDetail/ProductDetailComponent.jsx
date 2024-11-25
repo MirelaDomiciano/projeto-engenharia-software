@@ -16,14 +16,15 @@ const ProductDetailComponent = ({ product }) => {
           alignItems: 'center' 
         }}>
           <Box sx={{
-            width: '100%',
+            width: '90%',
             height: { xs: 300, sm: 400, md: 500 }, 
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             overflow: 'hidden',
             borderRadius: 2,
-            boxShadow: 2
+            boxShadow: 2,
+            marginLeft: 5,
           }}>
             <img
               src={`/public/${product.emailUser}/${product.imageName}`}
@@ -33,7 +34,8 @@ const ProductDetailComponent = ({ product }) => {
                 height: '100%',
                 objectFit: 'cover', 
                 objectPosition: 'center', // Centraliza a imagem
-                borderRadius: '8px' // Bordas arredondadas
+                borderRadius: '8px', // Bordas arredondadas
+                justifyContent: 'center',
               }}
             />
           </Box>

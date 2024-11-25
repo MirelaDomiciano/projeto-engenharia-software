@@ -5,8 +5,9 @@ import "./index.css";
 import SignUp from "./pages/SignUp/SignUp";
 import SignIn from "./pages/SignIn/SignIn";
 import Home from "./pages/Home/Home";
-import NewProduct from "./pages/NewProduct/NewProduct";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import TrackingDetails from "./pages/TrackingDetails/TrackingDetails";
+import TrackingView from "./pages/TrackingView/TrackingView";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,26 @@ const router = createBrowserRouter([
       {
         path: "product-detail/:code",
         element: <ProductDetail />
+      }
+    ]
+  },
+  {
+    path: "home",
+    element: <Home />,
+    children: [
+      {
+        path: "tracking-detail/:code",
+        element: <TrackingDetails />
+      }
+    ]
+  },
+  {
+    path: "home",
+    element: <Home />,
+    children: [
+      {
+        path: "tracking-view/:code",
+        element: <TrackingView />
       }
     ]
   }

@@ -45,7 +45,6 @@ const UpdateStockComponent = ({ product }) => {
 
       if (response.status === 200) {
         alert('Stock updated successfully!');
-        // Update the displayed stock quantity
         setCurrentStock(prev => ({
           ...prev,
           quantity: prev.quantity + quantity

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-const UpdateStatusComponent = ({ product }) => {
+const UpdateStatusComponent = ({ code, emailUser }) => {
   const [status, setStatus] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,7 @@ const UpdateStatusComponent = ({ product }) => {
   };
 
   const handleUpdateStatus = async () => {
+    // Check for empty fields
     if (status === '' || !location.trim()) {
       setSnackbar({
         open: true,
@@ -42,22 +43,25 @@ const UpdateStatusComponent = ({ product }) => {
     }
 
     setLoading(true);
+
+    // Create object to send in the request
+    const requestData = {
+      productCode: code,
+      status: Number(status),
+      location: location.trim(),
+      emailUser: emailUser
+    };
+
+    console.log('Sending data:', requestData); // Debug log
+
     try {
-      // Garante que o status seja enviado como número
-      const requestData = {
-        productCode: Number(product.code),
-        status: Number(status),
-        location: location.trim(),
-        emailuser: product.emailUser
-      };
-
-      console.log('Sending data:', requestData); // Para debug
-
       const response = await axios.patch('http://localhost:8081/tracking', requestData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
+
+      console.log('Response:', response); // Debug log
 
       if (response.status === 200) {
         setSnackbar({
@@ -71,11 +75,15 @@ const UpdateStatusComponent = ({ product }) => {
       }
     } catch (error) {
       console.error('Error updating status:', error);
+
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Error updating status',
         severity: 'error'
       });
+
+      // Additional error information
+      console.log('Error response data:', error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -95,11 +103,9 @@ const UpdateStatusComponent = ({ product }) => {
       <Typography variant="h6" color="primary">
         Update Product Status
       </Typography>
-
       <Typography variant="body2" color="text.secondary">
-        Product Code: {product.code}
+        Product Code: {code}
       </Typography>
-
       <TextField
         select
         required
@@ -116,7 +122,6 @@ const UpdateStatusComponent = ({ product }) => {
           </MenuItem>
         ))}
       </TextField>
-
       <TextField 
         required
         label="Location" 
@@ -126,7 +131,6 @@ const UpdateStatusComponent = ({ product }) => {
         helperText="Enter current location"
         error={!location.trim()}
       />
-
       <Button 
         variant="contained" 
         color="primary"
@@ -137,7 +141,6 @@ const UpdateStatusComponent = ({ product }) => {
       >
         {loading ? 'Updating...' : 'Update Status'}
       </Button>
-
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={6000} 
